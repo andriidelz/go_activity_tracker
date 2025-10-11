@@ -1,7 +1,10 @@
 services:
   db:
+    container_name: postgres
     image: postgres:16
     environment:
+      TZ: Europe/Kyiv
+      PGTZ: Europe/Kyiv
       POSTGRES_DB: activity
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -18,17 +21,35 @@ services:
       - app-network
 
   api:
+    container_name: backend
     build: .
+    environment:
+      TZ: Europe/Kyiv
+      DB_DSN: host=db user=postgres password=postgres dbname=activity port=5432 sslmode=disable
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      - DB_DSN=host=db user=postgres password=postgres dbname=activity port=5432 sslmode=disable
     networks:
       - app-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+      
 networks:
   app-network:
     driver: bridge

@@ -1,3 +1,9 @@
+# How would I improve my SOLUTIUON if I had time:
+1) I would move frontend/ folder to a separate repo, for sure.
+2) Add delete handler and repo func, and also Decrement for Prometheus metric.
+3) Swagger
+4) 
+
 # Go Activity Tracker
 
 A Go REST API for recording user activity events and aggregating statistics every 4 hours. Includes a minimal React client.

@@ -32,7 +32,7 @@ func (j *JSONB) Scan(value any) error {
 type Event struct {
 	ID        int       `gorm:"primaryKey"`
 	UserID    int       `json:"user_id"`
-	Action    string    `json:"action"`
+	Type      string    `json:"type"`
 	Metadata  JSONB     `json:"metadata" gorm:"type:jsonb"`
 	CreatedAt time.Time `json:"created_at"`
 }

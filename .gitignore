@@ -1,1 +1,58 @@
-node_modules
+# ----------------------------------------------------
+# 1. DEPENDENCIES AND ARTIFACTS
+# ----------------------------------------------------
+# Node.js dependencies
+node_modules/
+
+# Compiled and Distribution Files
+bin/*
+/dist/
+/build/
+
+# ----------------------------------------------------
+# 2. LOGS AND TEMPORARY FILES
+# ----------------------------------------------------
+/logs/
+*.log
+*.out
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Executables and Libraries (cross-platform)
+*.exe
+*.dll
+*.so
+*.a
+*.o
+main
+
+# ----------------------------------------------------
+# 3. ENVIRONMENT & SECRETS
+# ----------------------------------------------------
+# Environment variables and secrets
+.env
+.env.*
+!.env.example # Optional: UN-ignore an example file if you have one
+
+# ----------------------------------------------------
+# 4. OS AND EDITOR SPECIFIC FILES
+# ----------------------------------------------------
+# macOS files
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# Windows Thumbnails
+Thumbs.db
+
+# JetBrains IDEs (IntelliJ, WebStorm, PyCharm, etc.)
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Package Lock files (if you prefer to regenerate them on install)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
