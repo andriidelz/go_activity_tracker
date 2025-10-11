@@ -1,0 +1,15 @@
+CREATE TABLE events (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE stats (
+    id SERIAL PRIMARY KEY,
+    period_start TIMESTAMP NOT NULL,
+    user_id INTEGER NOT NULL,
+    event_count INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
