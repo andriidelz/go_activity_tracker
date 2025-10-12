@@ -7,7 +7,7 @@
 
 - end to end tests - i dont know how to do, just have imagination about it. Dont do 'em -->
 
-- add makefile
+<!-- - add makefile - done!!!
 
 - improve docker compose yaml, and review dockerfile
 
@@ -24,4 +24,4 @@ Additionally, you can track system metrics: CPU, memory, DB connections, etc. â€
 - rename Action to other appropriate word. 
 
 - add Readme.md as per example, descriptive text how to run your app, and other things by your wish
- 
+  -->

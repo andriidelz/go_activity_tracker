@@ -9,8 +9,6 @@ import (
 	"github.com/andriidelzz/go-activity-tracker/internal/metrics"
 	"github.com/andriidelzz/go-activity-tracker/internal/repository"
 	"github.com/andriidelzz/go-activity-tracker/internal/server"
-
-	"github.com/robfig/cron/v3"
 )
 
 func main() {
@@ -30,15 +28,7 @@ func main() {
 	repo := repository.NewRepository(db)
 	handler := handler.NewHandler(repo)
 
-	c := cron.New()
-	_, err = c.AddFunc("0 */4 * * *", func() { jobs.AggregateEvents(repo) }) // Every 4 hours.
-	if err != nil {
-		slog.Error("Critical error occurred during cron start", "err", err)
-		os.Exit(1)
-	} // todo move to jobs
-
-	c.Start() // todo add stop logic if not exists.
-	slog.Info("Cron job started for aggregation every 4 hours")
+	jobs.StartScheduler(repo)
 
 	r := server.RegisterRoutes(handler)
 	slog.Info("Starting API on :8080")

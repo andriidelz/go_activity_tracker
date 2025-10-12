@@ -12,7 +12,6 @@ var (
 	)
 )
 
-// Register all metrics here.
 func Register() {
 	prometheus.MustRegister(EventsTotal)
 }

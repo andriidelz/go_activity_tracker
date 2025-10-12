@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-// JSONB is a custom type for JSONB fields in PostgreSQL
 type JSONB map[string]any
 
 func (j JSONB) Value() (driver.Value, error) {
