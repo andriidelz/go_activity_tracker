@@ -78,7 +78,6 @@ func TestIntegration_AggregationFlow(t *testing.T) {
 func TestIntegration_NoEvents(t *testing.T) {
 	repo := setupIntegrationDB(t)
 
-	// Aggregate when there are no events
 	err := repo.AggregateLastPeriod()
 	require.NoError(t, err)
 

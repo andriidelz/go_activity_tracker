@@ -9,6 +9,9 @@ integration:
 all-tests: test integration
 	@echo "All tests completed ✅"
 
+metrics:
+	go run ./cmd/main.go
+
 build:
 	mkdir -p bin
 	GOEXPERIMENT=greenteagc CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/main ./cmd

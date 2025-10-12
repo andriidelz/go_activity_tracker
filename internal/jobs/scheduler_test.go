@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// MockRepository implements the interface
 type MockRepository struct {
 	Called bool
 }
@@ -29,8 +28,17 @@ func TestAggregateEvents(t *testing.T) {
 
 func TestScheduler_StartScheduler(t *testing.T) {
 	mockRepo := &MockRepository{}
-	c := StartScheduler(mockRepo, true) // interface works here now
+	c := StartScheduler(mockRepo, true)
 	time.Sleep(20 * time.Millisecond)
 	c.Stop()
 	require.NotNil(t, c)
+}
+
+func BenchmarkAggregateEvents(b *testing.B) {
+	mockRepo := &MockRepository{}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		AggregateEvents(mockRepo)
+	}
 }

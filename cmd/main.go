@@ -24,6 +24,7 @@ func main() {
 	}
 
 	metrics.Register()
+	metrics.CollectSystemMetrics(db)
 
 	repo := repository.NewRepository(db)
 	handler := handler.NewHandler(repo)

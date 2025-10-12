@@ -11,7 +11,3 @@ var (
 		[]string{"action"},
 	)
 )
-
-func Register() {
-	prometheus.MustRegister(EventsTotal)
-}

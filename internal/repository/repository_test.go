@@ -104,3 +104,35 @@ func TestGetStats(t *testing.T) {
 	require.Equal(t, 2, stats[1].UserID)
 	require.Equal(t, 3, stats[1].EventCount)
 }
+
+func BenchmarkCreateEvent(b *testing.B) {
+	repo := setupTestDB(nil)
+	event := &model.Event{
+		UserID:   1,
+		Type:     "benchmark",
+		Metadata: map[string]any{"ip": "127.0.0.1"},
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = repo.CreateEvent(event)
+	}
+}
+
+func BenchmarkAggregateLastPeriod(b *testing.B) {
+	repo := setupTestDB(nil)
+
+	// Preload DB with events
+	for i := range 10 {
+		_ = repo.CreateEvent(&model.Event{
+			UserID:   i % 10,
+			Type:     "click",
+			Metadata: map[string]any{},
+		})
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = repo.AggregateLastPeriod()
+	}
+}

@@ -38,16 +38,35 @@ A Go REST API for recording user activity events and aggregating statistics ever
 ## Tests
 
 - go test (or make test)
-- go test -v -tags=integration ./internal/repository (integration tests)
+- go test -v -tags=integration ./internal/repository (make integration) (integration tests)
+- make all-tests
 
 ## Daily Job Description
 
 The job runs every 4 hours, queries events from the last 4 hours, groups by user_id, counts them, and inserts into 'stats' table with period_start timestamp. It's not strictly daily but produces periodic aggregates that can be summed for daily stats.
 
-## Notes on Optional Parts
+## Metrics
 
-Grafana not implemented (nice-to-have). To add: Integrate Prometheus for metrics and Loki for logs.
+- We can check on port: <http://localhost:8080/metrics>
+
+## Prometheus
+
+- Open in your browser: <http://localhost:9090/>
+
+## Grafana
+
+- Open Grafana: <http://localhost:3000/>
+- Default login: admin / admin
+- You’ll be prompted to change the password
+- Go to Settings → Data Sources → Add data source
+- Choose Prometheus: in the URL field, enter: <http://prometheus:9090>
+- Click Save & Test — should show Data source is working
 
 ## .env.example
 
 See .env.example for DB_DSN.
+
+## Notes on Optional Parts
+
+left to create end to end tests
+add linters (golang-ci.yaml)
