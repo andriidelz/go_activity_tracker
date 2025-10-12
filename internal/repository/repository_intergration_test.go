@@ -74,3 +74,58 @@ func TestIntegration_AggregationFlow(t *testing.T) {
 	require.Equal(t, 2, stats[0].EventCount)
 	require.Equal(t, 1, stats[1].EventCount)
 }
+
+func TestIntegration_NoEvents(t *testing.T) {
+	repo := setupIntegrationDB(t)
+
+	// Aggregate when there are no events
+	err := repo.AggregateLastPeriod()
+	require.NoError(t, err)
+
+	stats, err := repo.GetStats()
+	require.NoError(t, err)
+	require.Len(t, stats, 0)
+}
+
+func TestIntegration_MultipleAggregations(t *testing.T) {
+	repo := setupIntegrationDB(t)
+
+	events1 := []model.Event{
+		{UserID: 1, Type: "click", CreatedAt: time.Now()},
+		{UserID: 1, Type: "scroll", CreatedAt: time.Now()},
+	}
+	for _, e := range events1 {
+		require.NoError(t, repo.CreateEvent(&e))
+	}
+
+	err := repo.AggregateLastPeriod()
+	require.NoError(t, err)
+
+	stats, err := repo.GetStats()
+	require.NoError(t, err)
+	require.Len(t, stats, 1)
+	require.Equal(t, 2, stats[0].EventCount)
+
+	events2 := []model.Event{
+		{UserID: 1, Type: "click", CreatedAt: time.Now()},
+		{UserID: 2, Type: "scroll", CreatedAt: time.Now()},
+	}
+	for _, e := range events2 {
+		require.NoError(t, repo.CreateEvent(&e))
+	}
+
+	err = repo.AggregateLastPeriod()
+	require.NoError(t, err)
+
+	stats, err = repo.GetStats()
+	require.NoError(t, err)
+	require.Len(t, stats, 2)
+
+	m := make(map[int]int)
+	for _, s := range stats {
+		m[s.UserID] = s.EventCount
+	}
+
+	require.Equal(t, 3, m[1])
+	require.Equal(t, 1, m[2])
+}

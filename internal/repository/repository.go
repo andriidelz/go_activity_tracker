@@ -10,6 +10,7 @@ type RepositoryInterface interface {
 	CreateEvent(event *model.Event) error
 	GetEvents(userID int) ([]model.Event, error)
 	AggregateLastPeriod() error
+	GetStats() ([]model.Stat, error)
 }
 
 func NewRepository(db *gorm.DB) *Repository {

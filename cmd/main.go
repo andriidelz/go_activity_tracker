@@ -28,7 +28,7 @@ func main() {
 	repo := repository.NewRepository(db)
 	handler := handler.NewHandler(repo)
 
-	jobs.StartScheduler(repo)
+	jobs.StartScheduler(repo, false)
 
 	r := server.RegisterRoutes(handler)
 	slog.Info("Starting API on :8080")

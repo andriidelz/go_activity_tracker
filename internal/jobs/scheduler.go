@@ -10,10 +10,15 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func StartScheduler(repo *repository.Repository) {
+func StartScheduler(repo repository.RepositoryInterface, testMode bool) *cron.Cron {
 	c := cron.New()
 
-	_, err := c.AddFunc("0 */4 * * *", func() {
+	schedule := "0 */4 * * *"
+	if testMode {
+		schedule = "@every 1s"
+	}
+
+	_, err := c.AddFunc(schedule, func() {
 		AggregateEvents(repo)
 	})
 	if err != nil {
@@ -22,17 +27,18 @@ func StartScheduler(repo *repository.Repository) {
 	}
 
 	c.Start()
-	slog.Info("Cron job started for aggregation every 4 hours")
+	slog.Info("Cron job started", "schedule", schedule)
 
-	go func() {
-		stop := make(chan os.Signal, 1)
-		signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
-		<-stop
+	if !testMode {
+		go func() {
+			stop := make(chan os.Signal, 1)
+			signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+			<-stop
+			slog.Info("Shutdown signal received. Stopping cron scheduler...")
+			c.Stop()
+			slog.Info("Cron scheduler stopped gracefully.")
+		}()
+	}
 
-		slog.Info("Shutdown signal received. Stopping cron scheduler...")
-
-		c.Stop()
-
-		slog.Info("Cron scheduler stopped gracefully.")
-	}()
+	return c
 }
