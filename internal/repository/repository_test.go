@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -26,6 +27,8 @@ func setupTestDB(t *testing.T) *Repository {
 func TestCreateEvent(t *testing.T) {
 	repo := setupTestDB(t)
 
+	ctx := context.Background()
+
 	event := &model.Event{
 		UserID:    1,
 		Type:      "login",
@@ -33,13 +36,15 @@ func TestCreateEvent(t *testing.T) {
 		CreatedAt: time.Now(),
 	}
 
-	err := repo.CreateEvent(event)
+	err := repo.CreateEvent(ctx, event)
 	require.NoError(t, err)
 	require.NotZero(t, event.ID)
 }
 
 func TestGetEvents(t *testing.T) {
 	repo := setupTestDB(t)
+
+	ctx := context.Background()
 
 	events := []model.Event{
 		{UserID: 1, Type: "podcast"},
@@ -48,11 +53,11 @@ func TestGetEvents(t *testing.T) {
 	}
 
 	for _, e := range events {
-		err := repo.CreateEvent(&e)
+		err := repo.CreateEvent(ctx, &e)
 		require.NoError(t, err)
 	}
 
-	result, err := repo.GetEvents(1)
+	result, err := repo.GetEvents(ctx, 1)
 	require.NoError(t, err)
 	require.Len(t, result, 2)
 	require.Equal(t, "podcast", result[0].Type)
@@ -62,6 +67,8 @@ func TestGetEvents(t *testing.T) {
 func TestAggregateLastPeriod(t *testing.T) {
 	repo := setupTestDB(t)
 
+	ctx := context.Background()
+
 	events := []model.Event{
 		{UserID: 1, Type: "click", CreatedAt: time.Now()},
 		{UserID: 1, Type: "scroll", CreatedAt: time.Now()},
@@ -69,13 +76,13 @@ func TestAggregateLastPeriod(t *testing.T) {
 	}
 
 	for _, e := range events {
-		require.NoError(t, repo.CreateEvent(&e))
+		require.NoError(t, repo.CreateEvent(ctx, &e))
 	}
 
-	err := repo.AggregateLastPeriod()
+	err := repo.AggregateLastPeriod(ctx)
 	require.NoError(t, err)
 
-	stats, err := repo.GetStats()
+	stats, err := repo.GetStats(ctx)
 	require.NoError(t, err)
 
 	require.Len(t, stats, 2)
@@ -86,16 +93,18 @@ func TestAggregateLastPeriod(t *testing.T) {
 func TestGetStats(t *testing.T) {
 	repo := setupTestDB(t)
 
+	ctx := context.Background()
+
 	statsToInsert := []model.Stat{
 		{UserID: 1, EventCount: 5},
 		{UserID: 2, EventCount: 3},
 	}
 
 	for _, s := range statsToInsert {
-		require.NoError(t, repo.db.Create(&s).Error)
+		require.NoError(t, repo.db.WithContext(ctx).Create(&s).Error)
 	}
 
-	stats, err := repo.GetStats()
+	stats, err := repo.GetStats(ctx)
 	require.NoError(t, err)
 	require.Len(t, stats, 2)
 
@@ -107,6 +116,9 @@ func TestGetStats(t *testing.T) {
 
 func BenchmarkCreateEvent(b *testing.B) {
 	repo := setupTestDB(nil)
+
+	ctx := context.Background()
+
 	event := &model.Event{
 		UserID:   1,
 		Type:     "benchmark",
@@ -115,16 +127,18 @@ func BenchmarkCreateEvent(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = repo.CreateEvent(event)
+		_ = repo.CreateEvent(ctx, event)
 	}
 }
 
 func BenchmarkAggregateLastPeriod(b *testing.B) {
 	repo := setupTestDB(nil)
 
+	ctx := context.Background()
+
 	// Preload DB with events
 	for i := range 10 {
-		_ = repo.CreateEvent(&model.Event{
+		_ = repo.CreateEvent(ctx, &model.Event{
 			UserID:   i % 10,
 			Type:     "click",
 			Metadata: map[string]any{},
@@ -133,6 +147,6 @@ func BenchmarkAggregateLastPeriod(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = repo.AggregateLastPeriod()
+		_ = repo.AggregateLastPeriod(ctx)
 	}
 }

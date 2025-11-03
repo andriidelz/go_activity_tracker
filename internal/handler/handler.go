@@ -1,11 +1,13 @@
 package handler
 
-import "github.com/andriidelzz/go-activity-tracker/internal/repository"
+import (
+	"github.com/andriidelzz/go-activity-tracker/internal/repository"
+)
 
 type Handler struct {
-	repo *repository.Repository
+	repo repository.RepositoryInterface
 }
 
-func NewHandler(repo *repository.Repository) *Handler {
+func NewHandler(repo repository.RepositoryInterface) *Handler {
 	return &Handler{repo: repo}
 }

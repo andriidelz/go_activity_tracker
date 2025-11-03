@@ -15,6 +15,8 @@ func RegisterRoutes(h *handler.Handler) *gin.Engine {
 
 	r.POST("/events", h.HandleCreateEvent)
 	r.GET("/events", h.HandleGetEvents)
+	r.GET("/stats", h.HandleGetStats)
+	r.POST("/aggregate", h.HandleAggregate)
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	return r

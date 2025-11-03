@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
@@ -35,6 +36,8 @@ func setupIntegrationDB(t *testing.T) *Repository {
 func TestIntegration_CreateAndGetEvent(t *testing.T) {
 	repo := setupIntegrationDB(t)
 
+	ctx := context.Background()
+
 	event := &model.Event{
 		UserID:    42,
 		Type:      "integration_login",
@@ -42,11 +45,11 @@ func TestIntegration_CreateAndGetEvent(t *testing.T) {
 		CreatedAt: time.Now(),
 	}
 
-	err := repo.CreateEvent(event)
+	err := repo.CreateEvent(ctx, event)
 	require.NoError(t, err)
 	require.NotZero(t, event.ID)
 
-	events, err := repo.GetEvents(42)
+	events, err := repo.GetEvents(ctx, 42)
 	require.NoError(t, err)
 	require.Len(t, events, 1)
 	require.Equal(t, "integration_login", events[0].Type)
@@ -55,19 +58,21 @@ func TestIntegration_CreateAndGetEvent(t *testing.T) {
 func TestIntegration_AggregationFlow(t *testing.T) {
 	repo := setupIntegrationDB(t)
 
+	ctx := context.Background()
+
 	events := []model.Event{
 		{UserID: 1, Type: "click", CreatedAt: time.Now()},
 		{UserID: 1, Type: "scroll", CreatedAt: time.Now()},
 		{UserID: 2, Type: "click", CreatedAt: time.Now()},
 	}
 	for _, e := range events {
-		require.NoError(t, repo.CreateEvent(&e))
+		require.NoError(t, repo.CreateEvent(ctx, &e))
 	}
 
-	err := repo.AggregateLastPeriod()
+	err := repo.AggregateLastPeriod(ctx)
 	require.NoError(t, err)
 
-	stats, err := repo.GetStats()
+	stats, err := repo.GetStats(ctx)
 	require.NoError(t, err)
 	require.Len(t, stats, 2)
 
@@ -78,10 +83,12 @@ func TestIntegration_AggregationFlow(t *testing.T) {
 func TestIntegration_NoEvents(t *testing.T) {
 	repo := setupIntegrationDB(t)
 
-	err := repo.AggregateLastPeriod()
+	ctx := context.Background()
+
+	err := repo.AggregateLastPeriod(ctx)
 	require.NoError(t, err)
 
-	stats, err := repo.GetStats()
+	stats, err := repo.GetStats(ctx)
 	require.NoError(t, err)
 	require.Len(t, stats, 0)
 }
@@ -89,18 +96,20 @@ func TestIntegration_NoEvents(t *testing.T) {
 func TestIntegration_MultipleAggregations(t *testing.T) {
 	repo := setupIntegrationDB(t)
 
+	ctx := context.Background()
+
 	events1 := []model.Event{
 		{UserID: 1, Type: "click", CreatedAt: time.Now()},
 		{UserID: 1, Type: "scroll", CreatedAt: time.Now()},
 	}
 	for _, e := range events1 {
-		require.NoError(t, repo.CreateEvent(&e))
+		require.NoError(t, repo.CreateEvent(ctx, &e))
 	}
 
-	err := repo.AggregateLastPeriod()
+	err := repo.AggregateLastPeriod(ctx)
 	require.NoError(t, err)
 
-	stats, err := repo.GetStats()
+	stats, err := repo.GetStats(ctx)
 	require.NoError(t, err)
 	require.Len(t, stats, 1)
 	require.Equal(t, 2, stats[0].EventCount)
@@ -110,13 +119,13 @@ func TestIntegration_MultipleAggregations(t *testing.T) {
 		{UserID: 2, Type: "scroll", CreatedAt: time.Now()},
 	}
 	for _, e := range events2 {
-		require.NoError(t, repo.CreateEvent(&e))
+		require.NoError(t, repo.CreateEvent(ctx, &e))
 	}
 
-	err = repo.AggregateLastPeriod()
+	err = repo.AggregateLastPeriod(ctx)
 	require.NoError(t, err)
 
-	stats, err = repo.GetStats()
+	stats, err = repo.GetStats(ctx)
 	require.NoError(t, err)
 	require.Len(t, stats, 2)
 
