@@ -18,3 +18,6 @@ build:
 
 clean:
 	rm -rf ./bin/main
+
+benchmark:
+	docker-compose run --rm benchmark
