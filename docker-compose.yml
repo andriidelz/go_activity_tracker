@@ -12,6 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -19,20 +20,7 @@ services:
       retries: 5
     networks:
       - app-network
-  benchmark:
-    image: golang:1.25
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: go test -bench=. -benchmem ./internal/...
-    environment:
-      DB_DSN: host=db user=postgres password=postgres dbname=activity_test port=5432 sslmode=disable
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
-
+  
   api:
     container_name: backend
     build: .

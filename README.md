@@ -39,6 +39,7 @@ A Go REST API for recording user activity events and aggregating statistics ever
 
 - go test (or make test)
 - go test -v -tags=integration ./internal/repository (make integration) (integration tests)
+- make benchmark
 - make all-tests
 
 ## Daily Job Description

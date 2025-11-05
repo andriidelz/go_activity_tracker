@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func setupTestDB(t *testing.T) *Repository {
+func setupTestDB(t testing.TB) *Repository {
 	t.Helper()
 
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
@@ -115,25 +115,23 @@ func TestGetStats(t *testing.T) {
 }
 
 func BenchmarkCreateEvent(b *testing.B) {
-	repo := setupTestDB(nil)
-
+	repo := setupTestDB(b)
 	ctx := context.Background()
-
-	event := &model.Event{
-		UserID:   1,
-		Type:     "benchmark",
-		Metadata: map[string]any{"ip": "127.0.0.1"},
-	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
+		event := &model.Event{
+			UserID:    1,
+			Type:      "benchmark",
+			Metadata:  map[string]any{"ip": "127.0.0.1"},
+			CreatedAt: time.Now(),
+		}
 		_ = repo.CreateEvent(ctx, event)
 	}
 }
 
 func BenchmarkAggregateLastPeriod(b *testing.B) {
-	repo := setupTestDB(nil)
-
+	repo := setupTestDB(b)
 	ctx := context.Background()
 
 	// Preload DB with events
