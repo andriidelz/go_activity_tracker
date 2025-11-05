@@ -50,5 +50,8 @@ func main() {
 
 	r := server.RegisterRoutes(handler)
 	slog.Info("Starting API on :8080")
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		slog.Error("API server failed", "error", err)
+		os.Exit(1)
+	}
 }

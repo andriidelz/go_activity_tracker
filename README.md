@@ -40,6 +40,7 @@ A Go REST API for recording user activity events and aggregating statistics ever
 - go test (or make test)
 - go test -v -tags=integration ./internal/repository (make integration) (integration tests)
 - make benchmark
+- linters: golangci-lint run --config .golangci.yml
 - make all-tests
 
 ## Daily Job Description
@@ -65,9 +66,4 @@ The job runs every 4 hours, queries events from the last 4 hours, groups by user
 
 ## .env.example
 
-See .env.example for DB_DSN.
-
-## Notes on Optional Parts
-
-left to create end to end tests
-add linters (golang-ci.yaml)
+See .env.example for DB_DSN

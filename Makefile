@@ -23,3 +23,6 @@ benchmark:
 	@echo "Running local benchmarks..."
 	DB_DSN="postgres://postgres:postgres@localhost:5432/activity_test?sslmode=disable" \
 	go test -bench=. -benchmem ./internal/...
+
+lint:
+	golangci-lint run ./...

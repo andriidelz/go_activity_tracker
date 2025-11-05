@@ -118,14 +118,14 @@ func BenchmarkCreateEvent(b *testing.B) {
 	repo := setupTestDB(b)
 	ctx := context.Background()
 
+	event := &model.Event{
+		UserID:   1,
+		Type:     "benchmark",
+		Metadata: map[string]any{"ip": "127.0.0.1"},
+	}
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		event := &model.Event{
-			UserID:    1,
-			Type:      "benchmark",
-			Metadata:  map[string]any{"ip": "127.0.0.1"},
-			CreatedAt: time.Now(),
-		}
 		_ = repo.CreateEvent(ctx, event)
 	}
 }

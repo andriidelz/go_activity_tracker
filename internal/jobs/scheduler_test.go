@@ -13,15 +13,15 @@ type MockRepository struct {
 	Called bool
 }
 
-func (m *MockRepository) CreateEvent(ctx context.Context, event *model.Event) error { return nil }
-func (m *MockRepository) GetEvents(ctx context.Context, userID int) ([]model.Event, error) {
+func (m *MockRepository) CreateEvent(_ context.Context, _ *model.Event) error { return nil }
+func (m *MockRepository) GetEvents(_ context.Context, _ int) ([]model.Event, error) {
 	return nil, nil
 }
-func (m *MockRepository) AggregateLastPeriod(ctx context.Context) error {
+func (m *MockRepository) AggregateLastPeriod(_ context.Context) error {
 	m.Called = true
 	return nil
 }
-func (m *MockRepository) GetStats(ctx context.Context) ([]model.Stat, error) { return nil, nil }
+func (m *MockRepository) GetStats(_ context.Context) ([]model.Stat, error) { return nil, nil }
 
 func TestAggregateEvents(t *testing.T) {
 	mockRepo := &MockRepository{}
